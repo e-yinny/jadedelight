@@ -1,0 +1,271 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Jade Delight</title>
+<link rel="stylesheet" href="delight.css">
+
+<!-- JQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+</head>
+    <body>
+  
+        <script language="javascript">
+        $(document).ready(function(){
+            $("#Pickup").click(function(){
+            $("#city").hide();
+            $("#street").hide();
+            });
+            $("#delivery").click(function(){
+            $("#city").show();
+            $("#street").show();
+            });
+            $("[name=quan0]").change(function() {
+            var quantity = $("[name=quan0]").val();
+            var newTotal = updateTotal(0, quantity);
+            $("[name=cost]").eq("0").val(newTotal);
+            updateFinTotal();
+            })
+            $("[name=quan1]").change(function() {
+            var quantity = $("[name=quan1]").val();
+            var newTotal = updateTotal(1, quantity);
+            $("[name=cost]").eq("1").val(newTotal);
+            updateFinTotal();
+            })
+            $("[name=quan2]").change(function() {
+            var quantity = $("[name=quan2]").val();
+            var newTotal = updateTotal(2, quantity);
+            $("[name=cost]").eq("2").val(newTotal);
+            updateFinTotal();
+            })
+            $("[name=quan3]").change(function() {
+            var quantity = $("[name=quan3]").val();
+            var newTotal = updateTotal(3, quantity);
+            $("[name=cost]").eq("3").val(newTotal);
+            updateFinTotal();
+            })
+            $("[name=quan4]").change(function() {
+            var quantity = $("[name=quan4]").val();
+            var newTotal = updateTotal(4, quantity);
+            $("[name=cost]").eq("4").val(newTotal);
+            updateFinTotal();
+            })
+        });
+
+        function MenuItem(name, cost)
+        {
+            this.name = name;
+            this.cost=cost;
+        }
+
+        menuItems = new Array(
+            new MenuItem("Chicken Chop Suey", 4.5),
+            new MenuItem("Sweet and Sour Pork", 6.25),
+            new MenuItem("Shrimp Lo Mein", 5.25),
+            new MenuItem("Moo Shi Chicken", 6.5),
+            new MenuItem("Fried Rice", 2.35)
+        );
+
+        function makeSelect(name, minRange, maxRange)
+        {
+            var t= "";
+            t = "<select name='" + name + "' size='1'>";
+            for (j=minRange; j<=maxRange; j++)
+            t += "<option>" + j + "</option>";
+            t+= "</select>"; 
+            return t;
+        }
+
+        // Checks that all the fields are correctly filled or sends out error messages
+        function validate(){
+        error = false;
+        var number = /^(([0-9]{7})|([0-9]{10}))$/;
+        var errorMessage = "ERRORS:\n";
+        with (document.data){
+            if(!phone.value.match(number)){
+            errorMessage += "phone number isn't valid\n";
+            document.data.phone.select();
+            error =true;
+            }
+            if (document.data.p_or_d[1].checked) {
+            if (city.value==""){
+                errorMessage += "no city name\n";
+                document.data.city.select();
+                error =true;
+            }
+            if (street.value==""){
+                errorMessage += "no street name\n";
+                document.data.street.select();
+                error =true;
+            }
+            }
+            if (lname.value=="")
+            {
+                errorMessage += "no last name\n";
+                document.data.lname.select();
+                error =true;
+            }
+            if(!validOrder()){
+                errorMessage += "must order at least one item\n";
+                error =true;
+            }
+            if(error == true){
+                alert(errorMessage);
+            }
+            if(error == false){
+                calculateOrder();
+            }
+        }
+        return !error;
+        }
+
+        function updateTotal(item, quantity){
+            price = menuItems[item].cost.toFixed(2);
+            var thePrice = price * quantity;
+            return thePrice.toFixed(2);
+        }
+
+        function updateFinTotal(){
+            var totalZero = parseFloat($("[name=cost]").eq("0").val());
+            var totalOne = parseFloat($("[name=cost]").eq("1").val());
+            var totalTwo = parseFloat($("[name=cost]").eq("2").val());
+            var totalThree = parseFloat($("[name=cost]").eq("3").val());
+            var totalFour = parseFloat($("[name=cost]").eq("4").val());
+            
+            var subtotal = totalZero + totalOne + totalTwo + totalThree + totalFour;
+            //subtotal = parseInt(subtotal);
+            $("#subtotal").val(subtotal);
+            
+            var tax = subtotal * 0.0625;
+            $("#tax").val(tax.toFixed(2));
+            
+            var finalTotal = subtotal + tax;
+            $("#total").val(finalTotal.toFixed(2));
+        }
+
+        function validOrder(){
+            if($("[name=quan0]").val()==0 &&
+                $("[name=quan1]").val()==0 &&
+                $("[name=quan2]").val()==0 &&
+                $("[name=quan3]").val()==0 &&
+                $("[name=quan4]").val()==0
+            ) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+        </script>
+
+        <h1>Jade Delight</h1>
+        <form 
+        name = "data"
+        method="get"
+        onsubmit="return validate()">
+
+        <p>First Name: <input type="text"  name='fname' /></p>
+        <p>Last Name*:  <input type="text"  name='lname' /></p>
+
+
+
+        <p id = "street">Street: <input type="text"  name='street'/></p>
+        <p id = "city">City: <input type="text"  name='city'/></p>
+        <p>Phone*: <input type="text"  name='phone' /></p>
+        <p> 
+            <input type="radio"  name="p_or_d" value = "pickup" id = "Pickup"/>Pickup  
+            <input type="radio"  name='p_or_d' value = 'delivery' id = "delivery" checked = "checked"/>
+            Delivery
+        </p>
+        <table border="0" cellpadding="3">
+        <tr>
+            <th>Select Item</th>
+            <th>Item Name</th>
+            <th>Cost Each</th>
+            <th>Total Cost</th>
+        </tr>
+
+        <script language="javascript">
+        var s = "";
+        for (i=0; i< menuItems.length; i++)
+        {
+            s += "<tr><td>";
+            s += makeSelect("quan" + i, 0, 10);
+            s += "</td><td>" + menuItems[i].name + "</td>";
+            s += "<td> $ " + menuItems[i].cost.toFixed(2) + "</td>";
+            s += "<td>$<input type='text' name='cost'/></td></tr>";
+        }
+        document.writeln(s);
+        
+        $("[name=cost]").eq("0").val(0);
+        $("[name=cost]").eq("1").val(0);
+        $("[name=cost]").eq("2").val(0);
+        $("[name=cost]").eq("3").val(0);
+        $("[name=cost]").eq("4").val(0);
+        
+        
+        function calculateOrder(){
+            var readyHour, readyMin;
+            date = new Date();
+            readyHour = date.getHours();
+            if (document.data.p_or_d[0].checked){
+            if (date.getMinutes()>44){
+                readyHour += 1;
+                readyMin = (date.getMinutes()+15) - 60;
+            }
+            else{
+                readyMin = date.getMinutes() + 15;
+            }
+            }
+            else{
+            if (date.getMinutes()>29){
+                readyHour += 1;
+                readyMin = (date.getMinutes()+30) - 60;
+            }
+            else{
+                readyMin = date.getMinutes() + 30;
+            }
+            }
+            var theOrder = getOrder();
+
+            new_window = window.open("");
+            order_sum = ("Thank You For Your Order \n" + theOrder + 
+            "\nThe food will be ready at " + readyHour + " hour(s) and " + readyMin + " minute(s)\nTotal: " + $("#total").val());
+
+            new_window.document.write(order_sum);
+            new_window.focus();
+        }
+        
+        
+        function getOrder() {
+            var orderedItems = "Your Order: ";
+            if ($("[name=quan0]").val() != 0 ) {
+            orderedItems += $("[name=quan0]").val() + " " + menuItems[0].name + " ";
+            }
+            if ($("[name=quan1]").val() != 0 ) {
+            orderedItems += $("[name=quan1]").val() + " " + menuItems[1].name + " ";
+            }
+            if ($("[name=quan2]").val() != 0 ) {
+            orderedItems += $("[name=quan2]").val() + " " + menuItems[2].name + " ";
+            }
+            if ($("[name=quan3]").val() != 0 ) {
+            orderedItems += $("[name=quan3]").val() + " " + menuItems[3].name + " ";
+            }
+            if ($("[name=quan4]").val() != 0 ) {
+            orderedItems += $("[name=quan4]").val() + " " + menuItems[4].name + " ";
+            }
+            return orderedItems;
+        }
+        </script>
+        </table>
+
+        <p>Subtotal: $ <input type="text"  name='subtotal' id="subtotal" /></p>
+        <p>Mass tax 6.25%: $ <input type="text"  name='tax' id="tax" /></p>
+        <p>Total: $ <input type="text"  name='total' id="total" /></p>
+
+        <input type = "submit" value = "Submit Order" class = "button"/>
+
+        </form>
+    </body>
+</html>
